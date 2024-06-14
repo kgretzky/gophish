@@ -17,8 +17,9 @@ const (
 )
 
 type resultData struct {
-	IP        string `json:"address"`
-	UserAgent string `json:"user-agent"`
+	IP        string                 `json:"address"`
+	UserAgent string                 `json:"user-agent"`
+	Data      map[string]interface{} `json:"data"` // Capture submitted data
 }
 
 func (as *Server) ResultOpen(w http.ResponseWriter, r *http.Request) {
@@ -47,8 +48,21 @@ func (as *Server) handleResult(action int, w http.ResponseWriter, r *http.Reques
 			return
 		}
 
+		// Convert map[string]interface{} to map[string][]string
+		payload := url.Values{}
+		for key, value := range c.Data {
+			switch v := value.(type) {
+			case string:
+				payload.Add(key, v)
+			case []string:
+				for _, item := range v {
+					payload.Add(key, item)
+				}
+			}
+		}
+
 		d := models.EventDetails{
-			Payload: url.Values{},
+			Payload: payload,
 			Browser: make(map[string]string),
 		}
 		d.Browser["address"] = c.IP
