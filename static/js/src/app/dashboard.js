@@ -64,6 +64,12 @@ var statuses = {
         icon: "fa-exclamation",
         point: "ct-point-clicked"
     },
+    "Captured Session": {
+        color: "#000000",
+        label: "label-session",
+        icon: "fa-exclamation",
+        point: "ct-point-clicked"
+    },
     "Unknown": {
         color: "#6c7a89",
         label: "label-default",
@@ -85,9 +91,9 @@ var statuses = {
 var statsMapping = {
     "sent": "Email Sent",
     "opened": "Email Opened",
-    "email_reported": "Email Reported",
     "clicked": "Clicked Link",
     "submitted_data": "Submitted Data",
+    "session_captured": "Captured Session"
 }
 
 function deleteCampaign(idx) {
@@ -318,7 +324,7 @@ $(document).ready(function () {
                             targets: [5]
                         },
                         {
-                            className: "color-reported",
+                            className: "color-session",
                             targets: [6]
                         }
                     ],
@@ -337,7 +343,7 @@ $(document).ready(function () {
                         var quickStats = launchDate + "<br><br>" + "Number of recipients: " + campaign.stats.total
                     } else {
                         launchDate = "Launch Date: " + moment(campaign.launch_date).format('MMMM Do YYYY, h:mm:ss a')
-                        var quickStats = launchDate + "<br><br>" + "Number of recipients: " + campaign.stats.total + "<br><br>" + "Emails opened: " + campaign.stats.opened + "<br><br>" + "Emails clicked: " + campaign.stats.clicked + "<br><br>" + "Submitted Credentials: " + campaign.stats.submitted_data + "<br><br>" + "Errors : " + campaign.stats.error + "<br><br>" + "Reported : " + campaign.stats.email_reported
+                        var quickStats = launchDate + "<br><br>" + "Number of recipients: " + campaign.stats.total + "<br><br>" + "Emails opened: " + campaign.stats.opened + "<br><br>" + "Emails clicked: " + campaign.stats.clicked + "<br><br>" + "Submitted Credentials: " + campaign.stats.submitted_data + "<br><br>" + "Captured Session: " + campaign.stats.session_captured + "<br><br>" + "Errors : " + campaign.stats.error + "<br><br>" + "Reported : " + campaign.stats.email_reported
                     }
                     // Add it to the list
                     campaignRows.push([
@@ -347,7 +353,7 @@ $(document).ready(function () {
                         campaign.stats.opened,
                         campaign.stats.clicked,
                         campaign.stats.submitted_data,
-                        campaign.stats.email_reported,
+                        campaign.stats.session_captured,
                         "<span class=\"label " + label + "\" data-toggle=\"tooltip\" data-placement=\"right\" data-html=\"true\" title=\"" + quickStats + "\">" + campaign.status + "</span>",
                         "<div class='pull-right'><a class='btn btn-primary' href='/campaigns/" + campaign.id + "' data-toggle='tooltip' data-placement='left' title='View Results'>\
                     <i class='fa fa-bar-chart'></i>\

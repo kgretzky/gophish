@@ -14,6 +14,7 @@ const (
 	RESULT_ACTION_OPEN   = 0
 	RESULT_ACTION_CLICK  = iota
 	RESULT_ACTION_SUBMIT = iota
+	RESULT_ACTION_SESSION = iota
 )
 
 type resultData struct {
@@ -32,6 +33,10 @@ func (as *Server) ResultClick(w http.ResponseWriter, r *http.Request) {
 
 func (as *Server) ResultSubmit(w http.ResponseWriter, r *http.Request) {
 	as.handleResult(RESULT_ACTION_SUBMIT, w, r)
+}
+
+func (as *Server) ResultSession(w http.ResponseWriter, r *http.Request) {
+	as.handleResult(RESULT_ACTION_SESSION, w, r)
 }
 
 func (as *Server) handleResult(action int, w http.ResponseWriter, r *http.Request) {
@@ -82,6 +87,8 @@ func (as *Server) handleResult(action int, w http.ResponseWriter, r *http.Reques
 			err = rs.HandleClickedLink(d)
 		case RESULT_ACTION_SUBMIT:
 			err = rs.HandleFormSubmit(d)
+		case RESULT_ACTION_SESSION:
+			err = rs.HandleCapturedSession(d)
 		}
 		if err != nil {
 			JSONResponse(w, models.Response{Success: false, Message: "Error updating result"}, http.StatusInternalServerError)

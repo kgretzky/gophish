@@ -692,6 +692,11 @@ table.dataTable {
     color: #f39c12;
 }
 
+.color-session {
+    font-weight: bold;
+    color: #000000;
+}
+
 .color-reported {
     font-weight: bold;
     color: #45d6ef;

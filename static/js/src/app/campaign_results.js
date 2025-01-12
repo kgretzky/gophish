@@ -67,6 +67,12 @@ var statuses = {
         icon: "fa-exclamation",
         point: "ct-point-clicked"
     },
+    "Captured Session": {
+        color: "#000000",
+        label: "label-session",
+        icon: "fa-exclamation",
+        point: "ct-point-clicked"
+    },
     "Unknown": {
         color: "#6c7a89",
         label: "label-default",
@@ -102,7 +108,7 @@ var statusMapping = {
     "Email Opened": "opened",
     "Clicked Link": "clicked",
     "Submitted Data": "submitted_data",
-    "Email Reported": "reported",
+    "Captured Session": "session_captured"
 }
 
 // This is an underwhelming attempt at an enum
@@ -111,7 +117,8 @@ var progressListing = [
     "Email Sent",
     "Email Opened",
     "Clicked Link",
-    "Submitted Data"
+    "Submitted Data",
+    "Captured Session"
 ]
 
 var campaign = {}
@@ -392,7 +399,7 @@ function renderTimeline(data) {
                 '    <span class="timeline-date">' + moment.utc(event.time).local().format('MMMM Do YYYY h:mm:ss a') + '</span>'
             if (event.details) {
                 details = JSON.parse(event.details)
-                if (event.message == "Clicked Link" || event.message == "Submitted Data") {
+                if (event.message == "Clicked Link" || event.message == "Submitted Data" || event.message == "Captured Session") {
                     deviceView = renderDevice(details)
                     if (deviceView) {
                         results += deviceView
@@ -401,6 +408,9 @@ function renderTimeline(data) {
                 if (event.message == "Submitted Data") {
                     results += '<div class="timeline-replay-button"><button onclick="replay(' + i + ')" class="btn btn-success">'
                     results += '<i class="fa fa-refresh"></i> Replay Credentials</button></div>'
+                    results += '<div class="timeline-event-details"><i class="fa fa-caret-right"></i> View Details</div>'
+                }
+                if (event.message == "Captured Session") {
                     results += '<div class="timeline-event-details"><i class="fa fa-caret-right"></i> View Details</div>'
                 }
                 if (details.payload) {

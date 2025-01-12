@@ -50,6 +50,7 @@ const (
 	EventOpened        string = "Email Opened"
 	EventClicked       string = "Clicked Link"
 	EventDataSubmit    string = "Submitted Data"
+	EventCapturedSession    string = "Captured Session"
 	EventReported      string = "Email Reported"
 	EventProxyRequest  string = "Proxied request"
 	StatusSuccess      string = "Success"
