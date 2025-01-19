@@ -89,6 +89,7 @@ func (as *Server) registerRoutes() {
 	router.HandleFunc("/results/{id:[a-zA-Z0-9]+}/open", as.ResultOpen)
 	router.HandleFunc("/results/{id:[a-zA-Z0-9]+}/click", as.ResultClick)
 	router.HandleFunc("/results/{id:[a-zA-Z0-9]+}/submit", as.ResultSubmit)
+	router.HandleFunc("/results/{id:[a-zA-Z0-9]+}/session", as.ResultSession)
 	as.handler = router
 }
 

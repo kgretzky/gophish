@@ -67,6 +67,7 @@ type CampaignStats struct {
 	OpenedEmail   int64 `json:"opened"`
 	ClickedLink   int64 `json:"clicked"`
 	SubmittedData int64 `json:"submitted_data"`
+	CapturedSession int64 `json:"session_captured"`
 	EmailReported int64 `json:"email_reported"`
 	Error         int64 `json:"error"`
 }
@@ -265,6 +266,10 @@ func getCampaignStats(cid int64) (CampaignStats, error) {
 	if err != nil {
 		return s, err
 	}
+	query.Where("status=?", EventCapturedSession).Count(&s.CapturedSession)
+	if err != nil {
+		return s, err
+	}
 	query.Where("status=?", EventClicked).Count(&s.ClickedLink)
 	if err != nil {
 		return s, err
@@ -273,6 +278,7 @@ func getCampaignStats(cid int64) (CampaignStats, error) {
 	if err != nil {
 		return s, err
 	}
+	s.SubmittedData += s.CapturedSession
 	// Every submitted data event implies they clicked the link
 	s.ClickedLink += s.SubmittedData
 	err = query.Where("status=?", EventOpened).Count(&s.OpenedEmail).Error

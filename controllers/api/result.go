@@ -14,11 +14,13 @@ const (
 	RESULT_ACTION_OPEN   = 0
 	RESULT_ACTION_CLICK  = iota
 	RESULT_ACTION_SUBMIT = iota
+	RESULT_ACTION_SESSION = iota
 )
 
 type resultData struct {
-	IP        string `json:"address"`
-	UserAgent string `json:"user-agent"`
+	IP        string                 `json:"address"`
+	UserAgent string                 `json:"user-agent"`
+	Data      map[string]interface{} `json:"data"` // Capture submitted data
 }
 
 func (as *Server) ResultOpen(w http.ResponseWriter, r *http.Request) {
@@ -31,6 +33,10 @@ func (as *Server) ResultClick(w http.ResponseWriter, r *http.Request) {
 
 func (as *Server) ResultSubmit(w http.ResponseWriter, r *http.Request) {
 	as.handleResult(RESULT_ACTION_SUBMIT, w, r)
+}
+
+func (as *Server) ResultSession(w http.ResponseWriter, r *http.Request) {
+	as.handleResult(RESULT_ACTION_SESSION, w, r)
 }
 
 func (as *Server) handleResult(action int, w http.ResponseWriter, r *http.Request) {
@@ -47,8 +53,21 @@ func (as *Server) handleResult(action int, w http.ResponseWriter, r *http.Reques
 			return
 		}
 
+		// Convert map[string]interface{} to map[string][]string
+		payload := url.Values{}
+		for key, value := range c.Data {
+			switch v := value.(type) {
+			case string:
+				payload.Add(key, v)
+			case []string:
+				for _, item := range v {
+					payload.Add(key, item)
+				}
+			}
+		}
+
 		d := models.EventDetails{
-			Payload: url.Values{},
+			Payload: payload,
 			Browser: make(map[string]string),
 		}
 		d.Browser["address"] = c.IP
@@ -68,6 +87,8 @@ func (as *Server) handleResult(action int, w http.ResponseWriter, r *http.Reques
 			err = rs.HandleClickedLink(d)
 		case RESULT_ACTION_SUBMIT:
 			err = rs.HandleFormSubmit(d)
+		case RESULT_ACTION_SESSION:
+			err = rs.HandleCapturedSession(d)
 		}
 		if err != nil {
 			JSONResponse(w, models.Response{Success: false, Message: "Error updating result"}, http.StatusInternalServerError)

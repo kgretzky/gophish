@@ -1,6 +1,16 @@
 -- +goose Up
 -- SQL in section 'Up' is executed when this migration is applied
 UPDATE `results`
+SET status = "Captured Session"
+WHERE id IN (
+        SELECT results_tmp.id
+        FROM (SELECT * FROM results) AS results_tmp, events
+        WHERE results.status = "Success"
+                AND events.message="Captured Session"
+                AND results_tmp.email = events.email
+                AND results_tmp.campaign_id = events.campaign_id);
+
+UPDATE `results`
 SET status = "Submitted Data"
 WHERE id IN (
         SELECT results_tmp.id
