@@ -96,9 +96,9 @@ func (r *Result) HandleEmailOpened(details EventDetails) error {
 	if err != nil {
 		return err
 	}
-	// Don't update the status if the user already clicked the link
-	// or submitted data to the campaign
-	if r.Status == EventClicked || r.Status == EventDataSubmit {
+	// Don't update the status if the user already clicked the link,
+	// submitted data to the campaign or had their session captured
+	if r.Status == EventClicked || r.Status == EventDataSubmit || r.Status == EventCapturedSession {
 		return nil
 	}
 	r.Status = EventOpened
@@ -114,8 +114,8 @@ func (r *Result) HandleClickedLink(details EventDetails) error {
 		return err
 	}
 	// Don't update the status if the user has already submitted data via the
-	// landing page form.
-	if r.Status == EventDataSubmit {
+	// landing page form or had their session captured.
+	if r.Status == EventDataSubmit || r.Status == EventCapturedSession {
 		return nil
 	}
 	r.Status = EventClicked
@@ -130,7 +130,23 @@ func (r *Result) HandleFormSubmit(details EventDetails) error {
 	if err != nil {
 		return err
 	}
+	// Don't update the status if the user's session has already been captured.
+	if r.Status == EventCapturedSession {
+		return nil
+	}
 	r.Status = EventDataSubmit
+	r.ModifiedDate = event.Time
+	return db.Save(r).Error
+}
+
+// HandleCapturedSession updates a Result in the case where the recipient's session
+// was captured.
+func (r *Result) HandleCapturedSession(details EventDetails) error {
+	event, err := r.createEvent(EventCapturedSession, details)
+	if err != nil {
+		return err
+	}
+	r.Status = EventCapturedSession
 	r.ModifiedDate = event.Time
 	return db.Save(r).Error
 }
