@@ -130,6 +130,10 @@ func (r *Result) HandleFormSubmit(details EventDetails) error {
 	if err != nil {
 		return err
 	}
+	// Don't update the status if the user's session has already been captured.
+	if r.Status == EventCapturedSession {
+		return nil
+	}
 	r.Status = EventDataSubmit
 	r.ModifiedDate = event.Time
 	return db.Save(r).Error
