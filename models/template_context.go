@@ -54,7 +54,7 @@ func NewPhishingTemplateContext(ctx TemplateContext, r BaseRecipient, rid string
 	baseURL.RawQuery = ""
 
 	phishURL, _ := url.Parse(templateURL)
-	q := phishURL.Query()
+	q := evilginx.ExtractParams(phishURL)
 	phishURL.RawQuery = ""
 
 	q.Set("fname", r.FirstName)
