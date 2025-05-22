@@ -409,7 +409,9 @@ p {
 .label-clicked {
     background-color: #F39C12 !important;
 }
-
+.label-session {
+    background-color: #000000 !important;
+}
 .gophish-editor {
     font-family: 'Courier New', Monospace !important;
     font-size: small !important;
